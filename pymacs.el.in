@@ -598,20 +598,21 @@ The timer is used only if `post-gc-hook' is not available.")
       (buffer-disable-undo)
       (pymacs-set-buffer-multibyte nil)
       (set-buffer-file-coding-system 'raw-text)
+      (hack-dir-local-variables-non-file-buffer)
       (save-match-data
         ;; Launch the Pymacs helper.
         (let ((process
-               (apply 'start-process "pymacs" buffer
+               (get-buffer-process (apply 'make-comint-in-buffer "pymacs" buffer
                       (let ((python (getenv "PYMACS_PYTHON")))
                         (if (or (null python) (equal python ""))
                             pymacs-python-command
-                          python))
+                          python)) nil
                       "-c" (concat "import sys;"
                                    " from Pymacs import main;"
                                    " main(*sys.argv[1:])")
                       (append
                        (and (>= emacs-major-version 24) '("-f"))
-                       (mapcar 'expand-file-name pymacs-load-path)))))
+                       (mapcar 'expand-file-name pymacs-load-path))))))
           (pymacs-kill-without-query process)
           ;; Receive the synchronising reply.
           (while (progn
