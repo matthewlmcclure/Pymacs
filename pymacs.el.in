@@ -165,6 +165,16 @@ If NOERROR is not nil, do not raise error when the module is not found."
                        result))
           (noerror (message "Pymacs loading %s...failed" module) nil))))
 
+;; The `pymacs-load' function defines lots of new symbols and wreaks
+;; havoc because of its dependency on the *Pymacs* buffer's helper
+;; process. Pymacs should provide a sane way to unload itself and the
+;; symbols it defines via `pymacs-load'. See also
+;; <http://www.gnu.org/software/emacs/manual/html_node/elisp/Unloading.html>
+;; and
+;; <http://www.gnu.org/software/emacs/manual/html_node/elisp/Named-Features.html>.
+(defun pymacs-unload-function ()
+  nil)
+
 ;;;###autoload
 (defun pymacs-autoload (function module &optional prefix docstring interactive)
   "Pymacs's equivalent of the standard emacs facility `autoload'.
